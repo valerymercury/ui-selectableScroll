@@ -79,6 +79,7 @@
      */
     _mouseStart: function (event) {
       var retValue = this._super(event);
+      console.log('_mouseStart');
       this.lastDragEvent = null;
       this.scrollInfo = {
         elementOffset: this.element.offset(), // The element's 0.0 offset related to the document element
@@ -320,7 +321,6 @@
      * @return {null}         No return value
      */
     _updateUi: function (options) {
-      console.log(this.lastDragEvent);
       var scrollObj = this._scrollIfNeeded({
         pageX: this.lastDragEvent.pageX,
         pageY: this.lastDragEvent.pageY
@@ -377,6 +377,7 @@
      */
     _clearIntervals: function () {
       // Stop scrolling
+      console.log('_clearIntervals');
       this.lastDragEvent = null;
       if (this.scrollIntervalId)
         clearInterval(this.scrollIntervalId);
