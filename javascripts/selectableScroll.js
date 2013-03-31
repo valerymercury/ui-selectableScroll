@@ -79,6 +79,7 @@
      */
     _mouseStart: function (event) {
       var retValue = this._super(event);
+      console.log('_mouseStart');
       this.lastDragEvent = null;
       this.scrollInfo = {
         elementOffset: this.element.offset(), // The element's 0.0 offset related to the document element
