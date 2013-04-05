@@ -130,7 +130,6 @@
       for (var counter = 0; counter < this.helperClasses.length; counter++) {
         var className = this.helperClasses[counter];
         if ($.inArray(className, lassoClassesArray) !== -1) {
-          console.log(className, lassoClassesArray);
           this.helper.addClass(className);
         } else {
           this.helper.removeClass(className);
