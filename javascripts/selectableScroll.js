@@ -88,6 +88,7 @@
         return false;
       }
       //-- end contribution by Aaron Waldonvar retValue = this._super(event);
+      var retValue = this._super(event);
       this.lastDragEvent = null;
       this.scrollInfo = {
         elementOffset: this.element.offset(), // The element's 0.0 offset related to the document element
