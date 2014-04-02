@@ -1,1 +1,7 @@
-{"name":"Ui-selectablescroll","tagline":"An extended jQuery-ui selectable with scroll capabilities","body":"selectableScroll\r\n================\r\n\r\nAn extended jQuery-ui selectable with scroll capabilities, tested on FF/Chrome.\r\n\r\n# Documentation\r\nhttps://github.com/karolyi/ui-selectableScroll/wiki/How-does-it-work","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
+{
+  "name": "Ui-selectablescroll",
+  "tagline": "An extended jQuery-ui selectable with scroll capabilities",
+  "body": "selectableScroll\r\n================\r\n\r\nAn extended jQuery-ui selectable with scroll capabilities, tested on FF/Chrome.\r\n\r\n# Documentation\r\nhttps://github.com/karolyi/ui-selectableScroll/wiki/How-does-it-work",
+  "google": "",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
