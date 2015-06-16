@@ -26,9 +26,9 @@
       // If an element is passed in here, use it for scrolling instead of widget's element
       scrollElement: null,
       // When the selection is that pixels near to the top/bottom edges, start to scroll
-      scrollSnapX: 5,
+      scrollSnapX: 10,
       // When the selection is that pixels near to the side edges, start to scroll
-      scrollSnapY: 5,
+      scrollSnapY: 10,
       scrollAmount: 25, // In pixels
       scrollIntervalTime: 100 // In milliseconds
     },
@@ -50,18 +50,37 @@
     },
 
     /**
-     * Cache selectee children based on filter
+     * Cache selectee children based on filter or add newly loaded selectees to cache
+     *
+     * @param  object (optional)  New selectees that aren't cached yet
      * @return null
      */
-    refresh: function () {
+    refresh: function (newSelectees) {
+      if (newSelectees) {
+        this.selectees = this.selectees.add(newSelectees);
+        this._configureSelectees(newSelectees);
+      }
+      else {
+        this.selectees = $(this.options.filter, this.scrollElement[0]);
+        this._configureSelectees(this.selectees);
+      }
+    },
+
+    /**
+     * Set necessary data attributes and classes to selectees
+     *
+     * @param  object  Selectees
+     * @return null
+     */
+    _configureSelectees: function (selectees) {
       var elementOffset = this.scrollElement.offset();
       var scrollLeft = this.scrollElement.prop('scrollLeft');
       var scrollTop = this.scrollElement.prop('scrollTop');
-      this.selectees = $(this.options.filter, this.scrollElement[0]);
-      this.selectees.addClass('ui-selectee');
-      this.selectees.each(function () {
+
+      selectees.addClass('ui-selectee');
+      selectees.each(function () {
         var $element = $(this),
-          pos = $element.offset();
+            pos = $element.offset();
         $.data(this, 'selectable-item', {
           element: this,
           $element: $element,
@@ -95,9 +114,8 @@
      */
     _mouseStart: function (event) {
       var pos = this.scrollElement.offset();
-      if (
-        (event.pageX > this.scrollElement.prop('clientWidth') + pos.left) ||
-        (event.pageY > this.scrollElement.prop('clientHeight') + pos.top)
+      if ( (event.pageX > this.scrollElement.prop('clientWidth') + pos.left) ||
+           (event.pageY > this.scrollElement.prop('clientHeight') + pos.top)
       ) {
         return false;
       }
@@ -136,6 +154,7 @@
     _updateHelper: function (options) {
       var x1, y1, x2, y2; // Absolute positions for the lasso helper
       var lassoClassesArray = [];
+
       if (options.x1 - options.scrollLeft < 0) {
         lassoClassesArray.push('no-left');
         x1 = this.scrollInfo.elementOffset.left;
@@ -183,22 +202,22 @@
      * boolean if the element should keep scrolling
      */
     _scrollIfNeeded: function (options) {
+
+      this.scrollInfo.scrollHeight = this.scrollElement.prop('scrollHeight')
+      this.scrollInfo.elementHeight = this.scrollElement.prop('clientHeight')
+
       var scrollLeft = this.scrollElement.prop('scrollLeft');
       var scrollTop = this.scrollElement.prop('scrollTop');
-
       var keepScrolling = false;
+
       // Scroll if close to edges or over them
-      if (this.lastDragEvent.pageX - this.scrollInfo.elementOffset.left <
-        this.options.scrollSnapX && scrollLeft > 0) {
-        scrollLeft = scrollLeft < this.options.scrollAmount ? 0 :
-          scrollLeft - this.options.scrollAmount;
+      if (this.lastDragEvent.pageX - this.scrollInfo.elementOffset.left < this.options.scrollSnapX && scrollLeft > 0) {
+        scrollLeft = scrollLeft < this.options.scrollAmount ? 0 : scrollLeft - this.options.scrollAmount;
         this.scrollElement.prop('scrollLeft', scrollLeft);
         keepScrolling = true;
       }
-      if (this.lastDragEvent.pageY - this.scrollInfo.elementOffset.top <
-        this.options.scrollSnapY && scrollTop > 0) {
-        scrollTop = scrollTop < this.options.scrollAmount ? 0 : scrollTop -
-          this.options.scrollAmount;
+      if (this.lastDragEvent.pageY - this.scrollInfo.elementOffset.top < this.options.scrollSnapY && scrollTop > 0) {
+        scrollTop = scrollTop < this.options.scrollAmount ? 0 : scrollTop - this.options.scrollAmount;
         this.scrollElement.prop('scrollTop', scrollTop);
         keepScrolling = true;
       }
@@ -214,13 +233,17 @@
       if (this.lastDragEvent.pageY - this.scrollInfo.elementOffset.top >
         this.scrollInfo.elementHeight - this.options.scrollSnapY && this.scrollInfo
         .scrollHeight > scrollLeft + this.scrollInfo.elementHeight) {
-        scrollTop = scrollTop + this.options.scrollAmount > this.scrollInfo
-          .scrollHeight - this.scrollInfo.elementHeight ? this.scrollInfo
-          .scrollHeight - this.scrollInfo.elementHeight : scrollTop +
-          this.options.scrollAmount;
+
+        scrollTop = scrollTop + this.options.scrollAmount > this.scrollInfo.scrollHeight - this.scrollInfo.elementHeight ?
+          this.scrollInfo.scrollHeight - this.scrollInfo.elementHeight : scrollTop + this.options.scrollAmount;
         this.scrollElement.prop('scrollTop', scrollTop);
         keepScrolling = true;
       }
+
+      // Check for new selectees
+      var newSelectees = $( this.options.filter + ':not(.ui-selectee)' );
+      if (newSelectees.length) this.refresh(newSelectees);
+
       return {
         scrollLeft: scrollLeft,
         scrollTop: scrollTop,
@@ -390,6 +413,7 @@
         pageX: this.lastDragEvent.pageX,
         pageY: this.lastDragEvent.pageY
       });
+
       var relativePos = this._calcRelativePosition({
         x: this.lastDragEvent.pageX,
         y: this.lastDragEvent.pageY,
